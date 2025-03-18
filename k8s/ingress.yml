@@ -5,7 +5,12 @@ metadata:
   namespace: app
   annotations:
     kubernetes.io/ingress.class: "gce"
+    # networking.gke.io/managed-certificates: "myapp-cert"
 spec:
+  # tls:
+  #   - hosts:
+  #     - myapp-supalongdnszzz.com
+  #     secretName: myapp-tls
   rules:
   - http:
       paths:
