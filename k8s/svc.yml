@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app1-deployment
+  namespace: app
+  labels:
+    app: sub-app1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sub-app1
+  template:
+    metadata:
+      labels:
+        app: sub-app1
+    spec:
+      containers:
+        - name: my-app-container
+          image: asia.gcr.io/gke-test-454003/my-app:latest
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sub-app1-svc
+  namespace: app
+  labels:
+    app: sub-app1
+spec:
+  type: ClusterIP
+  selector:
+    app: sub-app1
+  ports:
+    - port: 80
+      targetPort: 3000
