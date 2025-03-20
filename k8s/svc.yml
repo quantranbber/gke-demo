@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: app1-deployment
   namespace: app
+  annotations:
+    pending-timeout: "300"
   labels:
     app: sub-app1
 spec:
