@@ -40,3 +40,15 @@ data "google_iam_policy" "artifact_policy" {
     ]
   }
 }
+
+resource "google_secret_manager_secret" "artifact_pusher_secret" {
+  secret_id = "${var.project_name}-artifact-pusher-key"
+  replication {
+    auto {}
+  }
+}
+
+resource "google_secret_manager_secret_version" "artifact_pusher_secret_version" {
+  secret      = google_secret_manager_secret.artifact_pusher_secret.id
+  secret_data = base64decode(google_service_account_key.artifact_pusher_key.private_key)
+}
