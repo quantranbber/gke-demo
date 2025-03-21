@@ -33,7 +33,7 @@ After that, we will get the cluster ip as output
 1. Run this command
 ```bash
 gcloud auth activate-service-account --key-file=[SERVICE_ACCOUNT_TO_AUTH_GKE]
-gcloud container clusters get-credentials [CLUSTER_NAME] --zone=[ZONE] --project=[PROJECT_ID]
+gcloud container clusters get-credentials [CLUSTER_NAME] --project=[PROJECT_ID] --zone=[ZONE] --dns-endpoint
 kubectl create ns app
 kubectl apply -f k8s/
 ```

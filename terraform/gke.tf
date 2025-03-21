@@ -4,6 +4,15 @@ resource "google_container_cluster" "gke_cluster" {
   initial_node_count = var.nodes_count
   network            = google_compute_network.vpc.name
   subnetwork         = google_compute_subnetwork.private_subnet.name
+  dns_config {
+    cluster_dns       = "CLOUD_DNS"
+    cluster_dns_scope = "CLUSTER_SCOPE"
+  }
+  control_plane_endpoints_config {
+    dns_endpoint_config {
+      allow_external_traffic = true
+    }
+  }
   private_cluster_config {
     enable_private_nodes    = true
     enable_private_endpoint = false
