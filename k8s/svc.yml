@@ -19,15 +19,15 @@ spec:
     spec:
       containers:
         - name: my-app-container
-          image: asia-southeast1-docker.pkg.dev/gke-test-454003/my-project-repo/dev-my-project:20250320070329
+          image: asia-southeast1-docker.pkg.dev/gke-test-454003/my-project-repo/dev-my-project:20250322040353
           ports:
             - containerPort: 3000
           resources:
             requests:
-              cpu: "200m"
+              cpu: "500m"
               memory: "128Mi"
             limits:
-              cpu: "500m"
+              cpu: "1000m"
               memory: "500Mi"
           livenessProbe:
             httpGet:
