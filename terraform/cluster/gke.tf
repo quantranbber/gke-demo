@@ -1,9 +1,10 @@
 resource "google_container_cluster" "gke_cluster" {
-  name               = "${var.project_name}-gke-cluster"
-  location           = var.zone1
-  initial_node_count = var.nodes_count
-  network            = google_compute_network.vpc.name
-  subnetwork         = google_compute_subnetwork.private_subnet.name
+  name                = "${var.project_name}-gke-cluster"
+  location            = var.zone1
+  initial_node_count  = var.nodes_count
+  network             = google_compute_network.vpc.name
+  subnetwork          = google_compute_subnetwork.private_subnet.name
+  deletion_protection = false
   dns_config {
     cluster_dns       = "CLOUD_DNS"
     cluster_dns_scope = "CLUSTER_SCOPE"

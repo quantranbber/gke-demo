@@ -8,16 +8,45 @@ provider "google-beta" {
   project = var.project_id
 }
 
-# provider "kubernetes" {
-#   host                   = "https://${google_container_cluster.free_tier_cluster.endpoint}"
-#   token                  = data.google_client_config.default.access_token
-#   cluster_ca_certificate = base64decode(google_container_cluster.free_tier_cluster.master_auth[0].cluster_ca_certificate)
+# provider "helm" {
+#   kubernetes {
+#     host                   = "https://${module.cluster.gke_cluster_endpoint}"
+#     token                  = data.google_client_config.default.access_token
+#     cluster_ca_certificate = base64decode(module.cluster.gke_cluster_ca_certificate)
 #     exec {
-#     api_version = "client.authentication.k8s.io/v1beta1"
-#     command     = "gke-gcloud-auth-plugin"
+#       api_version = "client.authentication.k8s.io/v1beta1"
+#       command     = "gke-gcloud-auth-plugin"
+#     }
 #   }
 # }
 
+provider "kubernetes" {
+  host = "https://${module.cluster.gke_cluster_endpoint}"
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    args        = []
+    command     = "gke-gcloud-auth-plugin"
+  }
+}
 
-data "google_project" "current" {}
+module "cluster" {
+  source         = "./cluster"
+  default_region = var.default_region
+  environment    = var.environment
+  project_name   = var.project_name
+  project_id     = var.project_id
+  zone1          = var.zone1
+  nodes_count    = var.nodes_count
+  instance_type  = var.instance_type
+}
+
+module "k8s" {
+  depends_on     = [module.cluster]
+  source         = "./k8s"
+  default_region = var.default_region
+  environment    = var.environment
+  image_name     = module.cluster.image_name
+}
+
+
 data "google_client_config" "default" {}

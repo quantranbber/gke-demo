@@ -3,7 +3,6 @@ locals {
   img_name  = "${google_artifact_registry_repository.my_repo.location}-docker.pkg.dev/${data.google_project.current.project_id}/${google_artifact_registry_repository.my_repo.repository_id}/${var.environment}-${var.project_name}:${local.image_tag}"
 }
 
-# TODO: save in env or secret manager
 resource "null_resource" "docker_auth" {
   triggers = {
     always_run = timestamp()
@@ -22,21 +21,26 @@ resource "null_resource" "build_push_image" {
   }
 
   provisioner "local-exec" {
-    working_dir = "${path.module}/.."
+    working_dir = "${path.module}/../.."
     command     = "docker build -t ${local.img_name} . && docker push ${local.img_name}"
   }
 
   depends_on = [null_resource.docker_auth]
 }
 
-resource "google_secret_manager_secret" "image_secret" {
-  secret_id = "${var.project_name}-image-name"
-  replication {
-    auto {}
-  }
-}
+# resource "google_secret_manager_secret" "image_secret" {
+#   secret_id = "${var.project_name}-image-name"
+#   replication {
+#     auto {}
+#   }
+# }
 
-resource "google_secret_manager_secret_version" "image_secret_version" {
-  secret      = google_secret_manager_secret.image_secret.id
-  secret_data = local.img_name
+# resource "google_secret_manager_secret_version" "image_secret_version" {
+#   secret      = google_secret_manager_secret.image_secret.id
+#   secret_data = local.img_name
+# }
+
+
+output "image_name" {
+  value = local.img_name
 }
