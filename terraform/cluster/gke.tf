@@ -1,5 +1,5 @@
 resource "google_container_cluster" "gke_cluster" {
-  name                = "${var.project_name}-gke-cluster"
+  name                = "${var.environment}-${var.project_name}-gke-cluster"
   location            = var.zone1
   initial_node_count  = var.nodes_count
   network             = google_compute_network.vpc.name
@@ -25,14 +25,11 @@ resource "google_container_cluster" "gke_cluster" {
 
   remove_default_node_pool = true
 
-  resource_labels = {
-    environment = var.environment
-    project     = var.project_id
-  }
+  resource_labels = local.project_tag
 }
 
 resource "google_container_node_pool" "gke_node_pool" {
-  name       = "${var.project_name}-node-pool"
+  name       = "${var.environment}-${var.project_name}-node-pool"
   cluster    = google_container_cluster.gke_cluster.name
   location   = var.zone1
   node_count = var.nodes_count
@@ -45,10 +42,7 @@ resource "google_container_node_pool" "gke_node_pool" {
       "https://www.googleapis.com/auth/cloud-platform"
     ]
 
-    labels = {
-      environment = var.environment
-      project     = var.project_id
-    }
+    labels = local.project_tag
 
     tags = ["gke-node", "private", var.environment]
   }

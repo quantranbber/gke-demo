@@ -1,13 +1,28 @@
 resource "google_artifact_registry_repository" "my_repo" {
-  location      = var.default_region
-  repository_id = "${var.project_name}-repo"
-  format        = "DOCKER"
-  description   = "Repository for ${var.project_name} images"
+  location               = var.default_region
+  repository_id          = "${var.environment}-${var.project_name}-repo"
+  format                 = "DOCKER"
+  description            = "Repository for ${var.environment}-${var.project_name} images"
+  cleanup_policy_dry_run = false
 
-  labels = {
-    environment = var.environment
-    project     = var.project_id
+
+  cleanup_policies {
+    id     = "keep-most-recent-5"
+    action = "KEEP"
+    most_recent_versions {
+      keep_count = 5
+    }
   }
+
+  cleanup_policies {
+    id     = "delete-older"
+    action = "DELETE"
+    condition {
+      older_than = "30d"
+    }
+  }
+
+  labels = local.project_tag
 }
 
 resource "google_service_account" "artifact_pusher" {
@@ -42,7 +57,7 @@ data "google_iam_policy" "artifact_policy" {
 }
 
 resource "google_secret_manager_secret" "artifact_pusher_secret" {
-  secret_id = "${var.project_name}-artifact-pusher-key"
+  secret_id = "${var.environment}-${var.project_name}-artifact-pusher-key"
   replication {
     auto {}
   }

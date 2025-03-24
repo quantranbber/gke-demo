@@ -45,6 +45,7 @@ module "k8s" {
   source         = "./k8s"
   default_region = var.default_region
   environment    = var.environment
+  project_name   = var.project_name
   image_name     = module.cluster.image_name
 }
 

@@ -1,13 +1,13 @@
 resource "kubernetes_deployment" "app1_deployment" {
   metadata {
-    name      = "app1-deployment"
+    name      = "${var.environment}-${var.project_name}-app1-deployment"
     namespace = kubernetes_namespace.app.metadata[0].name
     annotations = {
       "pending-timeout" = "300"
     }
-    labels = {
-      app = "sub-app1"
-    }
+    labels = merge(tomap({
+      app = "${var.environment}-${var.project_name}-app1"
+    }), local.project_tag)
   }
 
   spec {
@@ -15,14 +15,14 @@ resource "kubernetes_deployment" "app1_deployment" {
 
     selector {
       match_labels = {
-        app = "sub-app1"
+        app = "${var.environment}-${var.project_name}-app1"
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "sub-app1"
+          app = "${var.environment}-${var.project_name}-app1"
         }
       }
 
@@ -62,17 +62,17 @@ resource "kubernetes_deployment" "app1_deployment" {
 
 resource "kubernetes_service" "sub_app1_svc" {
   metadata {
-    name      = "sub-app1-svc"
+    name      = "${var.environment}-${var.project_name}-app1-svc"
     namespace = kubernetes_namespace.app.metadata[0].name
-    labels = {
-      app = "sub-app1"
-    }
+    labels = merge(tomap({
+      app = "${var.environment}-${var.project_name}-app1"
+    }), local.project_tag)
   }
 
   spec {
     type = "ClusterIP"
     selector = {
-      app = "sub-app1"
+      app = "${var.environment}-${var.project_name}-app1"
     }
     port {
       port        = 80

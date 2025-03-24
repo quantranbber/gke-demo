@@ -1,7 +1,8 @@
 resource "kubernetes_limit_range" "app_limit_range" {
   metadata {
-    name      = "app-limit-range"
+    name      = "${var.environment}-${var.project_name}-limit-range"
     namespace = kubernetes_namespace.app.metadata[0].name
+    labels    = local.project_tag
   }
 
   spec {

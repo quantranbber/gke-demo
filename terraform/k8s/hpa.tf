@@ -1,7 +1,8 @@
-resource "kubernetes_horizontal_pod_autoscaler_v2" "nodejs_hpa" {
+resource "kubernetes_horizontal_pod_autoscaler_v2" "app_hpa" {
   metadata {
-    name      = "nodejs-hpa"
+    name      = "${var.environment}-${var.project_name}-hpa"
     namespace = kubernetes_namespace.app.metadata[0].name
+    labels    = local.project_tag
   }
 
   spec {
